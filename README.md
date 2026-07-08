@@ -2,6 +2,11 @@
 
 A stunning, interactive portfolio website built with React featuring a macOS-inspired interface with draggable windows, dock, and smooth animations.
 
+## 🌐 Live Demo
+**[View Live Portfolio →](https://my-portfolio-oerl.vercel.app)**
+
+[![Deploy Status](https://img.shields.io/badge/Vercel-Deployed-success?style=for-the-badge&logo=vercel&logoColor=white)](https://my-portfolio-oerl.vercel.app)
+
 ![Portfolio Preview](https://img.shields.io/badge/React-18.3-61dafb?style=for-the-badge&logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-5.4-646cff?style=for-the-badge&logo=vite&logoColor=white)
 ![Framer Motion](https://img.shields.io/badge/Framer_Motion-11.11-ff0055?style=for-the-badge&logo=framer&logoColor=white)
@@ -223,6 +228,7 @@ See `DEPLOYMENT.md` for detailed instructions.
 
 ## 🔗 Links
 
+- **🌐 Live Portfolio**: [my-portfolio-oerl.vercel.app](https://my-portfolio-oerl.vercel.app)
 - **GitHub**: [@ShubhamPaithane04](https://github.com/ShubhamPaithane04)
 - **LinkedIn**: [Shubham Paithane](https://www.linkedin.com/in/shubham-paithane-3b9909374/)
 - **LeetCode**: [@shubham_0_4_](https://leetcode.com/u/shubham_0_4_/)
