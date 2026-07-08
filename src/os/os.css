@@ -233,7 +233,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .profile-tagline {
   background-size: 200% 200%;
 }
-}
 
 /* What I'm doing card */
 .doing-card { padding: 20px 22px; grid-column: 2; }
