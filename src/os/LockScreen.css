@@ -1,0 +1,394 @@
+/* =========================================================================
+   LOCK SCREEN — glassmorphism macOS-style starting screen
+   The lock screen reads --ls-accent-rgb from the wallpaper and tints
+   every glass surface, glow, and stroke to match it automatically.
+   ========================================================================= */
+
+/* ── Root ──────────────────────────────────────────────────────────────── */
+.ls-root {
+  position: fixed;
+  inset: 0;
+  z-index: 50000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  cursor: default;
+  overflow: hidden;
+}
+
+/* ── Wallpaper ─────────────────────────────────────────────────────────── */
+.ls-wall {
+  position: absolute;
+  inset: -8%;
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  will-change: transform;
+  transition: background 0.45s ease;
+}
+
+/* ── Colour tint overlay (driven by JS inline style) ───────────────────── */
+.ls-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: background 0.45s ease;
+}
+
+/* ── Soft ambient blob behind the clock ────────────────────────────────── */
+.ls-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  transition: background 0.45s ease;
+}
+
+/* ── Floating particles ─────────────────────────────────────────────────── */
+.ls-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.ls-particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: ls-float linear infinite;
+}
+
+@keyframes ls-float {
+  0%   { transform: translateY(0px) scale(1);   opacity: var(--op, 0.18); }
+  40%  { transform: translateY(-28px) scale(1.2); opacity: calc(var(--op, 0.18) * 1.6); }
+  80%  { transform: translateY(-14px) scale(0.9); }
+  100% { transform: translateY(0px) scale(1);   opacity: var(--op, 0.18); }
+}
+
+/* ── Date ──────────────────────────────────────────────────────────────── */
+.ls-date {
+  position: relative;
+  z-index: 10;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(14px, 1.7vw, 18px);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.55);
+}
+
+/* ── Clock ─────────────────────────────────────────────────────────────── */
+.ls-clock {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  line-height: 1;
+  margin-bottom: 32px;
+  /* subtle text shadow for depth */
+  filter: drop-shadow(0 4px 28px rgba(0,0,0,0.45));
+}
+
+.ls-clock-h,
+.ls-clock-m {
+  font-size: clamp(88px, 14vw, 148px);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ls-clock-colon {
+  font-size: clamp(72px, 11vw, 120px);
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0 4px;
+  animation: ls-blink 2s step-start infinite;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes ls-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.25; }
+}
+
+.ls-clock-ampm {
+  align-self: flex-start;
+  margin-top: clamp(10px, 1.5vw, 22px);
+  margin-left: 8px;
+  font-size: clamp(18px, 2.6vw, 32px);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.05em;
+}
+
+/* ── Name / unlock card ─────────────────────────────────────────────────── */
+.ls-name-card {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  /* Glassmorphism surface */
+  background: rgba(18, 18, 22, 0.42);
+  backdrop-filter: blur(36px) saturate(180%);
+  -webkit-backdrop-filter: blur(36px) saturate(180%);
+
+  /* Border tinted to accent */
+  border: 1px solid var(--ls-stroke, rgba(100, 210, 255, 0.18));
+  border-radius: 32px;
+
+  padding: 28px 36px 24px;
+  min-width: 340px;
+  max-width: 88vw;
+
+  box-shadow:
+    0 0 0 0.5px rgba(255,255,255,0.06) inset,
+    0 24px 64px rgba(0,0,0,0.55),
+    0 0 80px var(--ls-glow, rgba(100,210,255,0.22));
+
+  transition: border-color 0.45s, box-shadow 0.45s;
+}
+
+/* Glossy highlight on top edge */
+.ls-name-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,0.35) 30%,
+    rgba(255,255,255,0.55) 50%,
+    rgba(255,255,255,0.35) 70%,
+    transparent
+  );
+  border-radius: 100%;
+}
+
+/* ── Name row inside card ─────────────────────────────────────────────── */
+.ls-name-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ── Avatar ────────────────────────────────────────────────────────────── */
+.ls-avatar-wrap {
+  flex: none;
+}
+
+.ls-avatar-ring {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(150deg, #3a3f52, #1c1f2b);
+  transition: box-shadow 0.45s;
+}
+
+.ls-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.ls-avatar-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.avatar-initials {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #a5b4fc, #f0abfc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.avatar-tagline {
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  line-height: 1;
+  margin-top: -2px;
+}
+
+/* ── Name text ─────────────────────────────────────────────────────────── */
+.ls-name-text {
+  text-align: left;
+}
+
+.ls-name {
+  font-size: clamp(17px, 2.2vw, 22px);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  margin: 0 0 4px;
+}
+
+.ls-role {
+  font-size: clamp(12px, 1.4vw, 14px);
+  color: rgba(220, 220, 240, 0.62);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* ── Unlock button ──────────────────────────────────────────────────────── */
+.ls-unlock-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 26px;
+  border-radius: 50px;
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  justify-content: center;
+
+  background: linear-gradient(
+    135deg,
+    rgba(var(--ls-accent-rgb, 100,210,255), 0.28) 0%,
+    rgba(var(--ls-accent-rgb, 100,210,255), 0.14) 100%
+  );
+  border: 1px solid rgba(var(--ls-accent-rgb, 100,210,255), 0.35);
+  box-shadow:
+    0 0 28px rgba(var(--ls-accent-rgb, 100,210,255), 0.22),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s, border-color 0.45s;
+}
+
+/* Shimmer sweep on hover */
+.ls-unlock-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: skewX(-15deg);
+  transition: left 0.45s ease;
+}
+.ls-unlock-btn:hover::after { left: 160%; }
+
+.ls-unlock-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--ls-accent-rgb, 100,210,255), 0.42) 0%,
+    rgba(var(--ls-accent-rgb, 100,210,255), 0.24) 100%
+  );
+  box-shadow:
+    0 0 46px rgba(var(--ls-accent-rgb, 100,210,255), 0.38),
+    inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+.ls-unlock-btn:active {
+  transform: translateY(0px) scale(0.97);
+}
+
+.ls-unlock-icon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ls-unlock-icon svg {
+  width: 100%;
+  height: 100%;
+  color: rgba(255,255,255,0.85);
+}
+
+.ls-unlock-arrow {
+  margin-left: auto;
+  font-size: 16px;
+  opacity: 0.7;
+}
+
+/* ── Hint ──────────────────────────────────────────────────────────────── */
+.ls-hint {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.32);
+  letter-spacing: 0.03em;
+  text-align: center;
+  margin: -6px 0 0;
+}
+
+/* ── Wallpaper badge ───────────────────────────────────────────────────── */
+.ls-wp-badge {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.55);
+  padding: 6px 14px;
+  border-radius: 50px;
+  background: rgba(18, 18, 22, 0.38);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 0.5px solid var(--ls-stroke, rgba(255,255,255,0.12));
+  letter-spacing: 0.03em;
+  transition: border-color 0.45s;
+}
+
+.ls-wp-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+  transition: background 0.45s, box-shadow 0.45s;
+}
+
+/* ── Unlock flash overlay ───────────────────────────────────────────────── */
+.ls-unlock-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 50001;
+  pointer-events: none;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .ls-name-card { min-width: unset; padding: 20px 22px 18px; border-radius: 24px; }
+  .ls-name { font-size: 16px; }
+  .ls-clock-h, .ls-clock-m { font-size: 22vw; }
+}

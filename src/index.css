@@ -1,0 +1,6 @@
+/* Minimal reset — the OS theme lives in src/os/os.css */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { overflow: hidden; height: 100%; }
+
+::selection { background: rgba(10, 132, 255, 0.4); color: #fff; }
