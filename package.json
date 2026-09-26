@@ -1,26 +1,15 @@
 {
-  "name": "the-port",
-  "version": "1.0.0",
-  "description": "A modern, professional portfolio website showcasing my skills, projects, and achievements as a Software Developer.",
+  "name": "shubham-portfolio",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Personal portfolio of Shubham Paithane",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
-    "@vitejs/plugin-react": "^6.0.3",
     "vite": "^8.1.0"
-  },
-  "dependencies": {
-    "chess.js": "^1.4.0",
-    "framer-motion": "^12.42.0",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "react-icons": "^5.6.0",
-    "react-intersection-observer": "^10.0.3",
-    "react-type-animation": "^3.2.0"
   }
 }
